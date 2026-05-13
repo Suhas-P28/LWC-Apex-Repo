@@ -1,0 +1,114 @@
+<template>
+    <lightning-card title="Contact Manager" icon-name="standard:contact">
+        <!-- Search and New Button Section -->
+        <div class="slds-m-around_medium">
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col slds-size_3-of-4">
+                    <lightning-input
+                        type="search"
+                        label="Search Contacts"
+                        placeholder="Search by name, email, or phone..."
+                        value={searchKey}
+                        onchange={handleSearchKeyChange}>
+                    </lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-4">
+                    <lightning-button
+                        variant="brand"
+                        label="New Contact"
+                        icon-name="utility:add"
+                        onclick={handleNewContact}
+                        class="slds-m-top_large">
+                    </lightning-button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Table -->
+        <div class="slds-m-around_medium">
+            <lightning-datatable
+                key-field="Id"
+                data={contacts}
+                columns={columns}
+                onrowaction={handleRowAction}
+                hide-checkbox-column>
+            </lightning-datatable>
+        </div>
+
+        <!-- Modal for Create/Edit -->
+        <template if:true={isModalOpen}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <!-- Modal Header -->
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" 
+                                title="Close" 
+                                onclick={closeModal}>
+                            <lightning-icon icon-name="utility:close" alternative-text="close" size="small"></lightning-icon>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 class="slds-text-heading_medium">{modalTitle}</h2>
+                    </header>
+
+                    <!-- Modal Body -->
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <div class="slds-form">
+                            <lightning-input
+                                label="First Name"
+                                value={firstName}
+                                data-field="firstName"
+                                onchange={handleInputChange}>
+                            </lightning-input>
+
+                            <lightning-input
+                                label="Last Name"
+                                value={lastName}
+                                data-field="lastName"
+                                onchange={handleInputChange}
+                                required>
+                            </lightning-input>
+
+                            <lightning-input
+                                type="email"
+                                label="Email"
+                                value={email}
+                                data-field="email"
+                                onchange={handleInputChange}>
+                            </lightning-input>
+
+                            <lightning-input
+                                type="tel"
+                                label="Phone"
+                                value={phone}
+                                data-field="phone"
+                                onchange={handleInputChange}>
+                            </lightning-input>
+
+                            <lightning-input
+                                label="Account ID"
+                                value={accountId}
+                                data-field="accountId"
+                                onchange={handleInputChange}>
+                            </lightning-input>
+                        </div>
+                    </div>
+
+                    <!-- Modal Footer -->
+                    <footer class="slds-modal__footer">
+                        <lightning-button
+                            variant="neutral"
+                            label="Cancel"
+                            onclick={closeModal}>
+                        </lightning-button>
+                        <lightning-button
+                            variant="brand"
+                            label="Save"
+                            onclick={handleSave}>
+                        </lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+    </lightning-card>
+</template>

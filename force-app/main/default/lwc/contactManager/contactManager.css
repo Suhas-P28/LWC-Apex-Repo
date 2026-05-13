@@ -1,0 +1,17 @@
+.slds-modal__container {
+    max-width: 600px;
+}
+
+.slds-form lightning-input {
+    margin-bottom: 1rem;
+}
+
+lightning-datatable {
+    min-height: 300px;
+}
+
+.slds-m-top_large {
+    margin-top: 1.5rem;
+}
+
+/* Made with Bob */

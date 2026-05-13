@@ -1,0 +1,340 @@
+{
+  "@context": {
+    "lwc": "http://example.org/lwc#",
+    "schema": "http://schema.org/",
+    "id": "@id",
+    "type": "@type",
+    "name": "schema:name",
+    "description": "schema:description",
+    "attributes": "lwc:attributes",
+    "identityKey": "lwc:identityKey",
+    "humanRef": "lwc:humanRef",
+    "invariant": "lwc:invariant",
+    "hasState": {
+      "@id": "lwc:hasState",
+      "@type": "@id"
+    },
+    "initialState": {
+      "@id": "lwc:initialState",
+      "@type": "@id"
+    },
+    "terminalStates": {
+      "@id": "lwc:terminalStates",
+      "@type": "@id"
+    },
+    "relatesTo": {
+      "@id": "lwc:relatesTo",
+      "@type": "@id"
+    },
+    "emitsEvent": {
+      "@id": "lwc:emitsEvent",
+      "@type": "@id"
+    },
+    "from": {
+      "@id": "lwc:from",
+      "@type": "@id"
+    },
+    "to": {
+      "@id": "lwc:to",
+      "@type": "@id"
+    },
+    "precondition": "lwc:precondition",
+    "postcondition": "lwc:postcondition",
+    "Entity": "lwc:Entity",
+    "Operation": "lwc:Operation",
+    "State": "lwc:State"
+  },
+  "@graph": [
+    {
+      "id": "lwc:LightningWebComponent",
+      "type": "Entity",
+      "name": "LightningWebComponent",
+      "description": "A reusable UI component built using Lightning Web Components framework",
+      "identityKey": "componentId: UUID",
+      "humanRef": "componentName",
+      "attributes": {
+        "componentId": "string",
+        "componentName": "string",
+        "namespace": "string",
+        "description": "string",
+        "isExposed": "boolean",
+        "targets": "array<string>",
+        "apiVersion": "string",
+        "status": "DRAFT|DEVELOPMENT|TESTING|DEPLOYED|DEPRECATED"
+      },
+      "invariant": [
+        "componentName must be unique within namespace",
+        "componentName must follow camelCase convention",
+        "apiVersion must be valid Salesforce API version",
+        "If isExposed is true, targets must be defined"
+      ],
+      "hasState": [
+        "lwc:ComponentDraft",
+        "lwc:ComponentDevelopment",
+        "lwc:ComponentTesting",
+        "lwc:ComponentDeployed",
+        "lwc:ComponentDeprecated"
+      ],
+      "initialState": "lwc:ComponentDraft",
+      "terminalStates": [
+        "lwc:ComponentDeployed",
+        "lwc:ComponentDeprecated"
+      ],
+      "relatesTo": [
+        "lwc:ComponentProperty",
+        "lwc:ComponentMethod",
+        "lwc:ComponentEvent",
+        "lwc:ApexController",
+        "lwc:StaticResource"
+      ],
+      "emitsEvent": [
+        "lwc:ComponentCreated",
+        "lwc:ComponentDeployed",
+        "lwc:ComponentDeprecated"
+      ]
+    },
+    {
+      "id": "lwc:ComponentProperty",
+      "type": "Entity",
+      "name": "ComponentProperty",
+      "description": "A public or private property of a Lightning Web Component",
+      "identityKey": "propertyId: UUID",
+      "humanRef": "propertyName",
+      "attributes": {
+        "propertyId": "string",
+        "propertyName": "string",
+        "componentId": "string",
+        "dataType": "string|number|boolean|object|array",
+        "isPublic": "boolean",
+        "isReactive": "boolean",
+        "defaultValue": "any|null",
+        "description": "string|null"
+      },
+      "invariant": [
+        "propertyName must be unique within component",
+        "Public properties must use @api decorator",
+        "Reactive properties must use @track decorator"
+      ],
+      "relatesTo": [
+        "lwc:LightningWebComponent"
+      ]
+    },
+    {
+      "id": "lwc:ComponentMethod",
+      "type": "Entity",
+      "name": "ComponentMethod",
+      "description": "A method defined in a Lightning Web Component",
+      "identityKey": "methodId: UUID",
+      "humanRef": "methodName",
+      "attributes": {
+        "methodId": "string",
+        "methodName": "string",
+        "componentId": "string",
+        "isPublic": "boolean",
+        "parameters": "array<object>",
+        "returnType": "string|null",
+        "description": "string|null",
+        "isLifecycleHook": "boolean"
+      },
+      "invariant": [
+        "methodName must be unique within component",
+        "Lifecycle hooks must follow LWC naming conventions",
+        "Public methods must use @api decorator"
+      ],
+      "relatesTo": [
+        "lwc:LightningWebComponent",
+        "lwc:ApexController"
+      ]
+    },
+    {
+      "id": "lwc:ComponentEvent",
+      "type": "Entity",
+      "name": "ComponentEvent",
+      "description": "A custom event dispatched by a Lightning Web Component",
+      "identityKey": "eventId: UUID",
+      "humanRef": "eventName",
+      "attributes": {
+        "eventId": "string",
+        "eventName": "string",
+        "componentId": "string",
+        "eventType": "CUSTOM|STANDARD",
+        "bubbles": "boolean",
+        "composed": "boolean",
+        "payload": "object|null",
+        "description": "string|null"
+      },
+      "invariant": [
+        "eventName must be unique within component",
+        "Custom events must use CustomEvent constructor",
+        "Event names should be lowercase with hyphens"
+      ],
+      "relatesTo": [
+        "lwc:LightningWebComponent"
+      ]
+    },
+    {
+      "id": "lwc:ComponentTemplate",
+      "type": "Entity",
+      "name": "ComponentTemplate",
+      "description": "The HTML template of a Lightning Web Component",
+      "identityKey": "templateId: UUID",
+      "humanRef": "componentName",
+      "attributes": {
+        "templateId": "string",
+        "componentId": "string",
+        "hasConditionalRendering": "boolean",
+        "hasIterators": "boolean",
+        "usesSlots": "boolean",
+        "importedComponents": "array<string>"
+      },
+      "invariant": [
+        "Template must be valid HTML",
+        "Must use lwc: directives for conditional rendering",
+        "Imported components must be registered"
+      ],
+      "relatesTo": [
+        "lwc:LightningWebComponent"
+      ]
+    },
+    {
+      "id": "lwc:ComponentStyle",
+      "type": "Entity",
+      "name": "ComponentStyle",
+      "description": "The CSS styling for a Lightning Web Component",
+      "identityKey": "styleId: UUID",
+      "humanRef": "componentName",
+      "attributes": {
+        "styleId": "string",
+        "componentId": "string",
+        "usesShadowDOM": "boolean",
+        "usesLightningDesignTokens": "boolean",
+        "customProperties": "array<string>"
+      },
+      "invariant": [
+        "Styles are scoped to component by default",
+        "Must use :host selector for component-level styles"
+      ],
+      "relatesTo": [
+        "lwc:LightningWebComponent"
+      ]
+    },
+    {
+      "id": "lwc:StaticResource",
+      "type": "Entity",
+      "name": "StaticResource",
+      "description": "A static resource used by Lightning Web Components",
+      "identityKey": "resourceId: UUID",
+      "humanRef": "resourceName",
+      "attributes": {
+        "resourceId": "string",
+        "resourceName": "string",
+        "resourceType": "IMAGE|CSS|JAVASCRIPT|JSON|OTHER",
+        "contentType": "string",
+        "cacheControl": "PUBLIC|PRIVATE"
+      },
+      "invariant": [
+        "resourceName must be unique",
+        "Resource must be uploaded to Salesforce"
+      ],
+      "relatesTo": [
+        "lwc:LightningWebComponent"
+      ]
+    },
+    {
+      "id": "lwc:UsesApexController",
+      "type": "Operation",
+      "name": "UsesApexController",
+      "description": "Links a component to its Apex controller for server-side operations",
+      "from": "lwc:LightningWebComponent",
+      "to": "lwc:ApexController",
+      "precondition": [
+        "Component must exist",
+        "Apex controller must exist",
+        "Apex methods must be annotated with @AuraEnabled"
+      ],
+      "postcondition": [
+        "Component can invoke Apex methods",
+        "Data binding is established between component and controller"
+      ]
+    },
+    {
+      "id": "lwc:ImportsComponent",
+      "type": "Operation",
+      "name": "ImportsComponent",
+      "description": "Establishes composition relationship between components",
+      "from": "lwc:LightningWebComponent",
+      "to": "lwc:LightningWebComponent",
+      "precondition": [
+        "Both components must exist",
+        "Child component must be accessible",
+        "No circular dependencies allowed"
+      ],
+      "postcondition": [
+        "Parent component can use child component in template",
+        "Component hierarchy is established"
+      ]
+    },
+    {
+      "id": "lwc:DispatchesEvent",
+      "type": "Operation",
+      "name": "DispatchesEvent",
+      "description": "Links a component to events it can dispatch",
+      "from": "lwc:LightningWebComponent",
+      "to": "lwc:ComponentEvent",
+      "precondition": [
+        "Component must exist",
+        "Event must be defined"
+      ],
+      "postcondition": [
+        "Component can dispatch the event",
+        "Parent components can listen for the event"
+      ]
+    },
+    {
+      "id": "lwc:UsesStaticResource",
+      "type": "Operation",
+      "name": "UsesStaticResource",
+      "description": "Links a component to static resources it uses",
+      "from": "lwc:LightningWebComponent",
+      "to": "lwc:StaticResource",
+      "precondition": [
+        "Component must exist",
+        "Static resource must be deployed"
+      ],
+      "postcondition": [
+        "Component can access static resource",
+        "Resource is loaded when component renders"
+      ]
+    },
+    {
+      "id": "lwc:ComponentDraft",
+      "type": "State",
+      "name": "ComponentDraft",
+      "description": "Component is being designed and not yet implemented"
+    },
+    {
+      "id": "lwc:ComponentDevelopment",
+      "type": "State",
+      "name": "ComponentDevelopment",
+      "description": "Component is being actively developed"
+    },
+    {
+      "id": "lwc:ComponentTesting",
+      "type": "State",
+      "name": "ComponentTesting",
+      "description": "Component is being tested with Jest or manual testing"
+    },
+    {
+      "id": "lwc:ComponentDeployed",
+      "type": "State",
+      "name": "ComponentDeployed",
+      "description": "Component is deployed and available for use"
+    },
+    {
+      "id": "lwc:ComponentDeprecated",
+      "type": "State",
+      "name": "ComponentDeprecated",
+      "description": "Component is deprecated and should not be used in new development"
+    }
+  ]
+}
