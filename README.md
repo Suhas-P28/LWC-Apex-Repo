@@ -1,1 +1,1 @@
-Sample readme of main branch
+Sample readme of master brnach
