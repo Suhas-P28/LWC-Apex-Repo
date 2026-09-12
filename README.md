@@ -1,1 +1,1 @@
-Sample readme of main brnach
+Sample readme of master brnach
